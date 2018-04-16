@@ -1,0 +1,2 @@
+server:
+  port: ${NOMAD_HOST_PORT_http:8090}
