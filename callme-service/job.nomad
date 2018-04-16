@@ -16,6 +16,10 @@ job "callme-service" {
 					port "http" {}
 				}
 			}
+			service {
+				name = "callme-service"
+				port = "http"
+			}
 		}
 		restart {
 			attempts = 1
