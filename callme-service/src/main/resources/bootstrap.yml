@@ -8,12 +8,10 @@ spring:
     vault:
       uri: http://192.168.99.100:8200
       token: s.zPjMgGjdskZdAm3fbn9HmonO
-      database:
+      postgresql:
         enabled: true
         role: default
-        backend: postgres
-        username-property: spring.datasource.username
-        password-property: spring.datasource.password
+        backend: database
   datasource:
     url: jdbc:postgresql://192.168.99.100:5432/postgres
 
