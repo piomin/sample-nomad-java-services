@@ -1,0 +1,22 @@
+server:
+  port: ${NOMAD_HOST_PORT_http:8091}
+
+spring:
+  application:
+    name: callme-service
+  cloud:
+    vault:
+      uri: http://192.168.99.100:8200
+      token: s.zPjMgGjdskZdAm3fbn9HmonO
+      database:
+        enabled: true
+        role: default
+        backend: postgres
+        username-property: spring.datasource.username
+        password-property: spring.datasource.password
+  datasource:
+    url: jdbc:postgresql://192.168.99.100:5432/postgres
+
+logging:
+  level:
+    org.springframework.cloud.vault: TRACE
