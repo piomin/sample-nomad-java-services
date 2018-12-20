@@ -14,7 +14,3 @@ spring:
         backend: database
   datasource:
     url: jdbc:postgresql://192.168.99.100:5432/postgres
-
-logging:
-  level:
-    org.springframework.cloud.vault: TRACE
