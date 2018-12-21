@@ -1,11 +1,10 @@
 package pl.piomin.services.caller.model;
 
+import javax.persistence.*;
 import java.util.Date;
 
-import javax.persistence.*;
-
 @Entity
-public class Callme {
+public class Caller {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -15,10 +14,10 @@ public class Callme {
     @Temporal(TemporalType.TIMESTAMP)
     private Date addDate;
 
-    public Callme() {
+    public Caller() {
     }
 
-    public Callme(String message, Date addDate) {
+    public Caller(String message, Date addDate) {
         this.message = message;
         this.addDate = addDate;
     }

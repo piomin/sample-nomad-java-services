@@ -9,9 +9,6 @@ job "callme-service" {
 				jar_path    = "C:\\Users\\minkowp\\git\\sample-nomad-java-services-idea\\callme-service\\target\\callme-service-1.0.0-SNAPSHOT.jar"
 				jvm_options = ["-Xmx256m", "-Xms128m"]
 			}
-			env {
-				VAULT_TOKEN_2 = "s.zPjMgGjdskZdAm3fbn9HmonO"
-			}
 			resources {
 				cpu    = 500 # MHz
 				memory = 300 # MB
@@ -24,7 +21,7 @@ job "callme-service" {
 				port = "http"
 			}
 			vault {
-				policies = ["default"]
+				policies = ["nomad"]
 			}
 		}
 		restart {

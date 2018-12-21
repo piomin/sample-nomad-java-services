@@ -1,10 +1,15 @@
 server:
-  port: ${NOMAD_HOST_PORT_http:8091}
-
+  port: ${NOMAD_HOST_PORT_http:8090}
+  
 spring:
   application:
-    name: callme-service
+    name: caller-service
   cloud:
+    consul:
+      host: 192.168.99.100
+      port: 8500
+      discovery:
+        register: false
     vault:
       uri: http://192.168.99.100:8200
       token: ${VAULT_TOKEN}
@@ -15,3 +20,4 @@ spring:
   datasource:
     url: jdbc:postgresql://192.168.99.100:5432/postgres
   jpa.hibernate.ddl-auto: update
+

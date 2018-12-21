@@ -2,7 +2,7 @@ job "caller-service" {
 	datacenters = ["dc1"]
 	type = "service"
 	group "caller" {
-		count = 2
+		count = 1
 		task "api" {
 			driver = "java"
 			config {
@@ -19,6 +19,9 @@ job "caller-service" {
 			service {
 				name = "caller-service"
 				port = "http"
+			}
+			vault {
+				policies = ["nomad"]
 			}
 		}
 		restart {
