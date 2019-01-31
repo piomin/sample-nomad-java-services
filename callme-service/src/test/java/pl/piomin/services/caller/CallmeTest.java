@@ -1,5 +1,6 @@
 package pl.piomin.services.caller;
 
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.testcontainers.containers.Container;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.vault.VaultContainer;
 
@@ -20,9 +20,7 @@ import java.io.IOException;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
         "spring.cloud.vault.token=123456"
 })
-public class CallerTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(CallerTest.class);
+public class CallmeTest {
 
     @Autowired
     TestRestTemplate template;
@@ -35,7 +33,7 @@ public class CallerTest {
                 .withPassword("postgres123");
         postgresContainer.start();
         port = postgresContainer.getFirstMappedPort();
-        System.setProperty("spring.datasource.url", "jdbc:postgresql://192.168.99.100:" + postgresContainer.getFirstMappedPort() + "/postgres");
+        System.setProperty("spring.datasource.url", String.format("jdbc:postgresql://192.168.99.100:%d/postgres", postgresContainer.getFirstMappedPort()));
     }
 
     @ClassRule
@@ -45,34 +43,19 @@ public class CallerTest {
 
     @BeforeClass
     public static void init() throws IOException, InterruptedException {
-        Container.ExecResult res = vaultContainer.execInContainer("vault", "secrets", "enable", "database");
-        LOG.info(res.getStdout());
-        String url = "connection_url=postgresql://{{username}}:{{password}}@192.168.99.100:" + port + "?sslmode=disable";
-        res = vaultContainer.execInContainer("vault", "write", "database/config/postgres", "plugin_name=postgresql-database-plugin",
-        "allowed_roles=default", url, "username=postgres", "password=postgres123");
-        LOG.info(res.getStdout());
-        LOG.error(res.getStderr());
-
-        res = vaultContainer.execInContainer("vault", "write", "database/roles/default", "db_name=postgres",
+        vaultContainer.execInContainer("vault", "secrets", "enable", "database");
+        String url = String.format("connection_url=postgresql://{{username}}:{{password}}@192.168.99.100:%d?sslmode=disable", port);
+        vaultContainer.execInContainer("vault", "write", "database/config/postgres", "plugin_name=postgresql-database-plugin", "allowed_roles=default", url, "username=postgres", "password=postgres123");
+        vaultContainer.execInContainer("vault", "write", "database/roles/default", "db_name=postgres",
                 "creation_statements=CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}';GRANT SELECT, UPDATE, INSERT ON ALL TABLES IN SCHEMA public TO \"{{name}}\";GRANT USAGE,  SELECT ON ALL SEQUENCES IN SCHEMA public TO \"{{name}}\";",
                 "default_ttl=1h", "max_ttl=24h");
-        LOG.info(res.getStdout());
-        LOG.error(res.getStderr());
-
-
-
-//        LOG.info("port={}", postgresContainer.getFirstMappedPort());
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.set("X-Vault-Token", "123456");
-//        String json = "{\"plugin_name\": \"postgresql-database-plugin\",\"allowed_roles\": \"default\",\"connection_url\": \"postgresql://{{username}}:{{password}}@192.168.99.100:" + postgresContainer.getFirstMappedPort() + "?sslmode=disable\",\"username\": \"postgres\",\"password\": \"postgres123\"}";
-//        HttpEntity<String> request = new HttpEntity<String>(json, headers);
-//        String resp = template.postForObject("http://192.168.99.100:8200/v1/database/config/postgres", request, String.class);
-//        LOG.info(resp);
     }
 
     @Test
     public void test() {
-
+        String res = template.getForObject("/callme/message/{message}", String.class, "Test");
+        Assert.assertNotNull(res);
+        Assert.assertTrue(res.endsWith("1"));
     }
 
 }

@@ -12,6 +12,7 @@ import pl.piomin.services.caller.model.Callme;
 import pl.piomin.services.caller.repository.CallmeRepository;
 
 import java.util.Date;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/callme")
@@ -20,15 +21,20 @@ public class CallmeController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CallmeController.class);
 	
 	@Autowired
-	BuildProperties buildProperties;
+	Optional<BuildProperties> buildProperties;
 	@Autowired
 	CallmeRepository repository;
 	
 	@GetMapping("/message/{message}")
 	public String ping(@PathVariable("message") String message) {
-		LOGGER.info("Ping: name={}, version={}", buildProperties.getName(), buildProperties.getVersion());
 		Callme c = repository.save(new Callme(message, new Date()));
-		return buildProperties.getName() + ":" + buildProperties.getVersion() + ":" + c.getId();
+		if (buildProperties.isPresent()) {
+			BuildProperties infoProperties = buildProperties.get();
+			LOGGER.info("Ping: name={}, version={}", infoProperties.getName(), infoProperties.getVersion());
+			return infoProperties.getName() + ":" + infoProperties.getVersion() + ":" + c.getId();
+		} else {
+			return "callme-service:"  + c.getId();
+		}
 	}
 	
 }
