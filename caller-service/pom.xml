@@ -11,6 +11,10 @@
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
+	<properties>
+		<soner.moduleKey>${artifactId}</soner.moduleKey>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
