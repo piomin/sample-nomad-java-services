@@ -12,7 +12,7 @@
 	</parent>
 
 	<properties>
-		<soner.moduleKey>${artifactId}</soner.moduleKey>
+		<sonar.moduleKey>${artifactId}</sonar.moduleKey>
 	</properties>
 
 	<dependencies>
